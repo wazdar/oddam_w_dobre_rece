@@ -9,4 +9,7 @@ urlpatterns = [
     path('add_donation', Main.AddDonationView.as_view(), name='add-donation-page'),
     path('register', Main.RegisterView.as_view(), name='register-page'),
     path('login', Main.LoginView.as_view(), name='login-page'),
+    path('logout', Main.logout_view, name='logout-page'),
+    path('profil', Main.UserProfileView.as_view(), name='profile-page'),
+
 ]
