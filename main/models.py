@@ -5,7 +5,7 @@ FOUNDATION = 0
 NON_GOV = 1
 LOCAL_COLLECTION = 2
 
-INSTYTUTION_CHOICE = {
+INSTITUTION_CHOICE = {
     (FOUNDATION, "Fundacja"),
     (NON_GOV, "Organizacja pozarządowa"),
     (LOCAL_COLLECTION, "Zbiórka lokalna")
@@ -22,7 +22,7 @@ class Category(models.Model):
 class Institution(models.Model):
     name = models.CharField(max_length=256)
     description = models.TextField()
-    institution_type = models.SmallIntegerField(choices=INSTYTUTION_CHOICE, default=FOUNDATION)
+    institution_type = models.SmallIntegerField(choices=INSTITUTION_CHOICE, default=FOUNDATION)
     categories = models.ManyToManyField(Category)
 
     def __str__(self):
@@ -32,6 +32,9 @@ class Institution(models.Model):
 class Donation(models.Model):
     class Meta:
         ordering = ['pick_up_date']
+
+    def __str__(self):
+        return f'{self.quantity} dla {self.institution.name} od {self.user.first_name} {self.user.last_name}'
 
     quantity = models.SmallIntegerField()
     categories = models.ManyToManyField(Category)
