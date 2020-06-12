@@ -401,4 +401,34 @@ document.addEventListener("DOMContentLoaded", function () {
     if (form !== null) {
         new FormSteps(form);
     }
+
+    $('.btn-confirm').one("click", function () {
+        const id = $(this).data('id'),
+            btn = $(this);
+        $.post('/donation_confirm', {
+            csrfmiddlewaretoken: getCookie('csrftoken'),
+            id:id,
+        }, function () {
+            console.log(btn.parent().text("Tak"))
+        })
+    });
+
+
+
+    function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
 });
+

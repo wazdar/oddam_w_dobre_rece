@@ -1,8 +1,10 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 
 from .models import Donation
+
 
 class UserRegister(UserCreationForm):
     first_name = forms.CharField(max_length=30, required=True, label="Imię")
@@ -23,8 +25,8 @@ class UserRegister(UserCreationForm):
 
 
 class UserLoginForm(forms.Form):
-    email = forms.CharField(widget=forms.TextInput(attrs={'placeholder':'Email'}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder':'Hasło'}))
+    email = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Email'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Hasło'}))
 
 
 class DonationForm(forms.ModelForm):
@@ -44,8 +46,18 @@ class DonationForm(forms.ModelForm):
         ]
 
 
-class UserProfile(forms.Form):
-    username = forms.CharField(max_length=100, label="Username")
-    first_name = forms.CharField(max_length=30, label="Imię")
-    last_name = forms.CharField(max_length=30, label="Nazwisko")
-    email = forms.EmailField(max_length=254, label="E-mail")
+class UserSettings(forms.Form):
+    first_name = forms.CharField(max_length=30, widget=forms.TextInput(attrs={'placeholder': 'Imię'}))
+    last_name = forms.CharField(max_length=30, widget=forms.TextInput(attrs={'placeholder': 'Nazwisko'}))
+    email = forms.EmailField(max_length=254, widget=forms.EmailInput(attrs={'placeholder': 'E-mail'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Hasło'}))
+    password_repeat = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Powtórz hasło'}))
+
+    def clean(self):
+        cleaned_data = super().clean()
+        print(cleaned_data)
+        if cleaned_data['password'] != cleaned_data['password_repeat']:
+            self.add_error('password', 'Hasła nie są identyczne')
+            self.add_error('password_repeat', 'Hasła nie są identyczne')
+            raise forms.ValidationError("Podano różne hasła")
+        return cleaned_data

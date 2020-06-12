@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.base import View
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
@@ -16,7 +16,7 @@ from .models import (
     NON_GOV,
     LOCAL_COLLECTION
 )
-from .forms import UserRegister, UserLoginForm, DonationForm, UserProfile
+from .forms import UserRegister, UserLoginForm, DonationForm, UserSettings
 
 
 class LadingPageView(View):
@@ -127,13 +127,41 @@ def logout_view(request):
 
 class UserProfileView(LoginRequiredMixin, View):
     def get(self, request):
-        form = UserProfile(initial={
-            "username": request.user.username,
+        return render(request, 'main/user_profile.html', {
+
+        })
+
+
+class UserSettingsView(LoginRequiredMixin, View):
+    def get(self, request):
+        form = UserSettings(initial={
             "first_name": request.user.first_name,
             "last_name": request.user.last_name,
             "email": request.user.email,
 
         })
-        return render(request, 'main/user_profile.html', {
+        return render(request, 'main/user_settings.html', {
             'form': form
         })
+    def post(self,request):
+        form = UserSettings(request.POST)
+        if form.is_valid():
+            user = User.objects.get(pk=request.user.id)
+            user.check_password(form.cleaned_data.get('password'))
+            user.first_name = form.cleaned_data['first_name']
+            user.last_name = form.cleaned_data['last_name']
+            user.email = form.cleaned_data['email']
+        print('nie valid')
+        return render(request, 'main/user_settings.html', {
+            'form': form
+        })
+
+def takenConfirm(request):
+    if request.method == "POST":
+        if not request.user.is_anonymous:
+            id = request.POST.get('id', None)
+            if id is not None:
+                donation = get_object_or_404(Donation, pk=id)
+                donation.is_taken = True
+                donation.save()
+                return JsonResponse({'Done': True})

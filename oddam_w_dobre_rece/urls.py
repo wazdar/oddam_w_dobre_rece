@@ -11,5 +11,7 @@ urlpatterns = [
     path('login', Main.LoginView.as_view(), name='login-page'),
     path('logout', Main.logout_view, name='logout-page'),
     path('profil', Main.UserProfileView.as_view(), name='profile-page'),
+    path('settings', Main.UserSettingsView.as_view(), name='settings-page'),
+    path('donation_confirm', Main.takenConfirm, name='confirm-page'),
 
 ]

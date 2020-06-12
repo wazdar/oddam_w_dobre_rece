@@ -15,6 +15,9 @@ INSTYTUTION_CHOICE = {
 class Category(models.Model):
     name = models.CharField(max_length=128)
 
+    def __str__(self):
+        return self.name
+
 
 class Institution(models.Model):
     name = models.CharField(max_length=256)
@@ -27,6 +30,9 @@ class Institution(models.Model):
 
 
 class Donation(models.Model):
+    class Meta:
+        ordering = ['pick_up_date']
+
     quantity = models.SmallIntegerField()
     categories = models.ManyToManyField(Category)
     institution = models.ForeignKey(Institution, on_delete=models.CASCADE)
@@ -38,3 +44,4 @@ class Donation(models.Model):
     pick_up_time = models.TimeField()
     pick_comment = models.TextField()
     user = models.ForeignKey(User, null=True, default=None, on_delete=models.CASCADE)
+    is_taken = models.BooleanField(default=False)
